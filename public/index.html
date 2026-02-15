@@ -10,8 +10,11 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="scanlines"></div>
 
+  <!-- Toast container -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <!-- Header -->
   <header class="header">
     <div class="header__brand">
       <div class="header__logo">
@@ -26,182 +29,128 @@
       </div>
     </div>
     <div class="header__status">
-      <span class="header__dot"></span>
-      <span class="header__status-text">CONNECTED</span>
+      <span class="header__dot" id="headerDot"></span>
+      <span class="header__status-text" id="headerStatusText">CONNECTING</span>
     </div>
   </header>
 
   <main class="main">
-    <!-- Left column: Order Form + Order List -->
-    <section class="panel panel--orders">
-      <div class="panel__header">
-        <h2 class="panel__title">New Order</h2>
-        <span class="panel__badge">SUBMIT</span>
-      </div>
-      <form id="orderForm" class="order-form" autocomplete="off">
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label" for="product">Product</label>
-            <input class="form-input" type="text" id="product" name="product" placeholder="e.g. Wireless Headphones" required>
-          </div>
-          <div class="form-group form-group--small">
-            <label class="form-label" for="quantity">Qty</label>
-            <input class="form-input" type="number" id="quantity" name="quantity" min="1" value="1" required>
-          </div>
-        </div>
-        <div class="form-group">
-          <label class="form-label" for="email">Email</label>
-          <input class="form-input" type="email" id="email" name="email" placeholder="customer@example.com" required>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label" for="paymentMethod">Payment</label>
-            <select class="form-input form-select" id="paymentMethod" name="paymentMethod" required>
-              <option value="credit">Credit Card</option>
-              <option value="debit">Debit Card</option>
-              <option value="crypto">Crypto</option>
-            </select>
-          </div>
-          <button type="submit" class="btn btn--submit" id="submitBtn">
-            <span class="btn__text">Place Order</span>
-            <span class="btn__icon">&rarr;</span>
-          </button>
-        </div>
-      </form>
 
-      <div class="panel__header panel__header--mt">
-        <h2 class="panel__title">Orders</h2>
-        <span class="panel__count" id="orderCount">0</span>
-      </div>
-      <div class="order-list-wrap">
-        <table class="order-table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Product</th>
-              <th>Status</th>
-              <th>Progress</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody id="orderTableBody">
-            <tr class="order-table__empty" id="emptyRow">
-              <td colspan="5">No orders yet. Submit one above.</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-
-    <!-- Center column: Queue Dashboard -->
-    <section class="panel panel--queues">
-      <div class="panel__header">
-        <h2 class="panel__title">Queue Dashboard</h2>
-        <span class="panel__badge panel__badge--live">LIVE</span>
-      </div>
-      <div class="queue-grid" id="queueGrid">
-        <div class="queue-card" data-queue="payment">
-          <div class="queue-card__header">
-            <span class="queue-card__icon">&#9399;</span>
-            <h3 class="queue-card__name">Payment</h3>
-          </div>
-          <div class="queue-card__stats">
-            <div class="stat"><span class="stat__val" id="payment-waiting">0</span><span class="stat__label">waiting</span></div>
-            <div class="stat"><span class="stat__val" id="payment-active">0</span><span class="stat__label">active</span></div>
-            <div class="stat stat--good"><span class="stat__val" id="payment-completed">0</span><span class="stat__label">done</span></div>
-            <div class="stat stat--bad"><span class="stat__val" id="payment-failed">0</span><span class="stat__label">failed</span></div>
-          </div>
-        </div>
-        <div class="queue-card" data-queue="inventory">
-          <div class="queue-card__header">
-            <span class="queue-card__icon">&#9881;</span>
-            <h3 class="queue-card__name">Inventory</h3>
-          </div>
-          <div class="queue-card__stats">
-            <div class="stat"><span class="stat__val" id="inventory-waiting">0</span><span class="stat__label">waiting</span></div>
-            <div class="stat"><span class="stat__val" id="inventory-active">0</span><span class="stat__label">active</span></div>
-            <div class="stat stat--good"><span class="stat__val" id="inventory-completed">0</span><span class="stat__label">done</span></div>
-            <div class="stat stat--bad"><span class="stat__val" id="inventory-failed">0</span><span class="stat__label">failed</span></div>
-          </div>
-        </div>
-        <div class="queue-card" data-queue="shipping">
-          <div class="queue-card__header">
-            <span class="queue-card__icon">&#9992;</span>
-            <h3 class="queue-card__name">Shipping</h3>
-          </div>
-          <div class="queue-card__stats">
-            <div class="stat"><span class="stat__val" id="shipping-waiting">0</span><span class="stat__label">waiting</span></div>
-            <div class="stat"><span class="stat__val" id="shipping-active">0</span><span class="stat__label">active</span></div>
-            <div class="stat stat--good"><span class="stat__val" id="shipping-completed">0</span><span class="stat__label">done</span></div>
-            <div class="stat stat--bad"><span class="stat__val" id="shipping-failed">0</span><span class="stat__label">failed</span></div>
-          </div>
-        </div>
-        <div class="queue-card" data-queue="notification">
-          <div class="queue-card__header">
-            <span class="queue-card__icon">&#9993;</span>
-            <h3 class="queue-card__name">Notification</h3>
-          </div>
-          <div class="queue-card__stats">
-            <div class="stat"><span class="stat__val" id="notification-waiting">0</span><span class="stat__label">waiting</span></div>
-            <div class="stat"><span class="stat__val" id="notification-active">0</span><span class="stat__label">active</span></div>
-            <div class="stat stat--good"><span class="stat__val" id="notification-completed">0</span><span class="stat__label">done</span></div>
-            <div class="stat stat--bad"><span class="stat__val" id="notification-failed">0</span><span class="stat__label">failed</span></div>
-          </div>
-        </div>
-        <div class="queue-card" data-queue="analytics">
-          <div class="queue-card__header">
-            <span class="queue-card__icon">&#9736;</span>
-            <h3 class="queue-card__name">Analytics</h3>
-          </div>
-          <div class="queue-card__stats">
-            <div class="stat"><span class="stat__val" id="analytics-waiting">0</span><span class="stat__label">waiting</span></div>
-            <div class="stat"><span class="stat__val" id="analytics-active">0</span><span class="stat__label">active</span></div>
-            <div class="stat stat--good"><span class="stat__val" id="analytics-completed">0</span><span class="stat__label">done</span></div>
-            <div class="stat stat--bad"><span class="stat__val" id="analytics-failed">0</span><span class="stat__label">failed</span></div>
-          </div>
-        </div>
-        <div class="queue-card queue-card--dlq" data-queue="dead-letter">
-          <div class="queue-card__header">
-            <span class="queue-card__icon">&#9888;</span>
-            <h3 class="queue-card__name">Dead Letter</h3>
-          </div>
-          <div class="queue-card__stats">
-            <div class="stat"><span class="stat__val" id="dead-letter-waiting">0</span><span class="stat__label">waiting</span></div>
-            <div class="stat"><span class="stat__val" id="dead-letter-active">0</span><span class="stat__label">active</span></div>
-            <div class="stat stat--good"><span class="stat__val" id="dead-letter-completed">0</span><span class="stat__label">done</span></div>
-            <div class="stat stat--bad"><span class="stat__val" id="dead-letter-failed">0</span><span class="stat__label">failed</span></div>
-          </div>
+    <!-- ============ TOP: SHOP SECTION ============ -->
+    <section class="shop-section">
+      <div class="section-header">
+        <h2 class="section-title">Shop</h2>
+        <div class="cart-summary" id="cartSummary">
+          <span class="cart-icon">&#128722;</span>
+          <span class="cart-count" id="cartCount">0</span>
         </div>
       </div>
 
-      <!-- DLQ Section -->
-      <div class="dlq-section">
-        <button class="dlq-toggle" id="dlqToggle" type="button">
-          <span class="dlq-toggle__text">Dead Letter Queue</span>
-          <span class="dlq-toggle__count" id="dlqCount">0</span>
-          <span class="dlq-toggle__arrow" id="dlqArrow">&#9662;</span>
-        </button>
-        <div class="dlq-list" id="dlqList">
-          <p class="dlq-empty" id="dlqEmpty">No permanently failed jobs.</p>
+      <div class="shop-layout">
+        <!-- Product Grid -->
+        <div class="product-grid" id="productGrid">
+          <!-- Products injected by JS -->
+        </div>
+
+        <!-- Cart Sidebar -->
+        <div class="cart-panel" id="cartPanel">
+          <div class="cart-header">
+            <h3 class="cart-title">Shopping Cart</h3>
+            <button class="btn btn--text" id="clearCartBtn" type="button">Clear</button>
+          </div>
+          <div class="cart-items" id="cartItems">
+            <p class="cart-empty" id="cartEmpty">Your cart is empty.</p>
+          </div>
+          <div class="cart-footer">
+            <div class="cart-total">
+              <span>Total</span>
+              <span class="cart-total__amount" id="cartTotal">$0.00</span>
+            </div>
+            <div class="cart-checkout">
+              <div class="form-group">
+                <label class="form-label" for="checkoutEmail">Email</label>
+                <input class="form-input" type="email" id="checkoutEmail" placeholder="you@example.com" value="demo@example.com">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="checkoutPayment">Payment</label>
+                <select class="form-input form-select" id="checkoutPayment">
+                  <option value="credit">Credit Card</option>
+                  <option value="debit">Debit Card</option>
+                  <option value="crypto">Crypto</option>
+                </select>
+              </div>
+              <button class="btn btn--buy" id="buyNowBtn" type="button" disabled>
+                <span class="btn__text">Buy Now</span>
+                <span class="btn__icon">&rarr;</span>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- Right column: Event Log -->
-    <section class="panel panel--events">
-      <div class="panel__header">
-        <h2 class="panel__title">Event Log</h2>
-        <div class="panel__actions">
-          <span class="event-counter" id="eventCounter">0 events</span>
-          <button class="btn btn--small btn--clear" id="clearLogBtn" type="button">Clear</button>
-        </div>
+    <!-- ============ MIDDLE: ORDER TRACKER ============ -->
+    <section class="tracker-section">
+      <div class="section-header">
+        <h2 class="section-title">Order Tracker</h2>
+        <span class="order-count-badge" id="orderCountBadge">0 orders</span>
       </div>
-      <div class="event-log" id="eventLog">
-        <div class="event-log__empty" id="eventLogEmpty">
-          Waiting for events...
+      <div class="order-tracker" id="orderTracker">
+        <p class="tracker-empty" id="trackerEmpty">No orders yet. Add items to your cart and click Buy Now.</p>
+      </div>
+    </section>
+
+    <!-- ============ BOTTOM: CONTROL PANEL (Collapsible) ============ -->
+    <section class="control-section">
+      <button class="control-toggle" id="controlToggle" type="button">
+        <span class="control-toggle__text">Control Panel</span>
+        <span class="control-toggle__arrow" id="controlArrow">&#9662;</span>
+      </button>
+
+      <div class="control-body" id="controlBody">
+        <!-- Action Buttons -->
+        <div class="control-actions">
+          <button class="btn btn--stress" id="stressTestBtn" type="button">Stress Test (10 orders)</button>
+          <button class="btn btn--danger" id="clearAllBtn" type="button">Clear All Queues</button>
+        </div>
+
+        <div class="control-grid">
+          <!-- Queue Metrics -->
+          <div class="control-panel-card">
+            <h3 class="control-card-title">Queue Metrics</h3>
+            <div class="queue-metrics" id="queueMetrics">
+              <!-- Injected by JS -->
+            </div>
+          </div>
+
+          <!-- Event Log -->
+          <div class="control-panel-card">
+            <div class="control-card-header">
+              <h3 class="control-card-title">Event Log</h3>
+              <div class="control-card-actions">
+                <span class="event-counter" id="eventCounter">0 events</span>
+                <button class="btn btn--small btn--clear" id="clearLogBtn" type="button">Clear</button>
+              </div>
+            </div>
+            <div class="event-log" id="eventLog">
+              <div class="event-log__empty" id="eventLogEmpty">Waiting for events...</div>
+            </div>
+          </div>
+
+          <!-- DLQ Viewer -->
+          <div class="control-panel-card">
+            <div class="control-card-header">
+              <h3 class="control-card-title">Dead Letter Queue</h3>
+              <span class="dlq-badge" id="dlqBadge">0</span>
+            </div>
+            <div class="dlq-viewer" id="dlqViewer">
+              <p class="dlq-empty" id="dlqEmpty">No permanently failed jobs.</p>
+            </div>
+          </div>
         </div>
       </div>
     </section>
+
   </main>
 
   <footer class="footer">
