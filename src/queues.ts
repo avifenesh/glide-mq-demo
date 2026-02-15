@@ -64,6 +64,8 @@ export const allQueues = [
 export const paymentWorker = new Worker(QUEUE_NAMES.payment, paymentProcessor, {
   connection,
   concurrency: 3,
+  promotionInterval: 500,  // Fast promotion for demo (check delayed jobs every 500ms)
+  blockTimeout: 1000,
 });
 
 export const inventoryWorker = new Worker(QUEUE_NAMES.inventory, inventoryProcessor, {
@@ -73,17 +75,23 @@ export const inventoryWorker = new Worker(QUEUE_NAMES.inventory, inventoryProces
 
 export const shippingWorker = new Worker(QUEUE_NAMES.shipping, shippingProcessor, {
   connection,
+  promotionInterval: 500,
+  blockTimeout: 1000,
   concurrency: 2,
 });
 
 export const notificationWorker = new Worker(QUEUE_NAMES.notification, notificationProcessor, {
   connection,
+  promotionInterval: 500,
+  blockTimeout: 1000,
   concurrency: 2,
   limiter: { max: 5, duration: 10000 },
 });
 
 export const analyticsWorker = new Worker(QUEUE_NAMES.analytics, analyticsProcessor, {
   connection,
+  promotionInterval: 500,
+  blockTimeout: 1000,
   concurrency: 5,
 });
 
