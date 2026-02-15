@@ -19,7 +19,7 @@ router.get('/', async (_req, res) => {
 // GET /api/dlq - dead letter queue jobs
 router.get('/dlq', async (_req, res) => {
   try {
-    const jobs = await deadLetterQueue.getJobs('failed', 0, 49);
+    const jobs = await deadLetterQueue.getJobs('waiting', 0, 49);
     res.json(
       jobs.map(j => ({
         id: j.id,

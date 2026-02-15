@@ -64,8 +64,9 @@ export const allQueues = [
 export const paymentWorker = new Worker(QUEUE_NAMES.payment, paymentProcessor, {
   connection,
   concurrency: 3,
-  promotionInterval: 500,  // Fast promotion for demo (check delayed jobs every 500ms)
+  promotionInterval: 500,
   blockTimeout: 1000,
+  deadLetterQueue: { name: QUEUE_NAMES.deadLetter },
 });
 
 export const inventoryWorker = new Worker(QUEUE_NAMES.inventory, inventoryProcessor, {
