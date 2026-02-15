@@ -6,7 +6,8 @@
   'use strict';
 
   // ---- State ----
-  const orders = new Map(); // id -> { id, product, quantity, email, paymentMethod, status }
+  const orders = new Map(); // orderId -> { id, product, quantity, email, paymentMethod, status }
+  const jobIdToOrderId = new Map(); // jobId -> orderId (for SSE event matching)
   let eventCount = 0;
   let sseConnected = false;
 
@@ -70,6 +71,13 @@
       };
 
       orders.set(String(order.id), order);
+      // Map all jobIds (parent + children) back to this orderId for SSE event matching
+      if (data.jobId) jobIdToOrderId.set(String(data.jobId), String(order.id));
+      if (data.children) {
+        data.children.forEach(function(c) {
+          if (c.jobId) jobIdToOrderId.set(String(c.jobId), String(order.id));
+        });
+      }
       renderOrderRow(order, true);
       orderForm.reset();
       document.getElementById('quantity').value = '1';
@@ -231,15 +239,29 @@
 
     // Update order status if applicable
     if (data.jobId || data.orderId) {
-      var id = String(data.orderId || data.jobId);
+      var jobId = String(data.jobId || '');
+      // Resolve jobId to orderId via our mapping
+      var id = jobIdToOrderId.get(jobId) || String(data.orderId || jobId);
       var eventType = data.event || data.type || '';
+      var queue = data.queue || '';
 
-      if (eventType === 'completed') {
-        updateOrderStatus(id, 'completed');
-      } else if (eventType === 'failed') {
-        updateOrderStatus(id, 'failed');
-      } else if (eventType === 'active') {
-        updateOrderStatus(id, 'processing');
+      // Only update order status for pipeline-level events (not individual sub-queues)
+      if (queue === 'order-pipeline' || queue === '') {
+        if (eventType === 'completed') {
+          updateOrderStatus(id, 'completed');
+        } else if (eventType === 'failed') {
+          updateOrderStatus(id, 'failed');
+        } else if (eventType === 'active' || eventType === 'added') {
+          updateOrderStatus(id, 'processing');
+        }
+      } else if (queue.includes('payment')) {
+        if (eventType === 'completed') {
+          updateOrderStatus(id, 'processing'); // payment done, still processing
+        } else if (eventType === 'failed') {
+          updateOrderStatus(id, 'failed');
+        } else if (eventType === 'retrying') {
+          updateOrderStatus(id, 'processing');
+        }
       }
     }
 
