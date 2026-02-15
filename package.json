@@ -1,0 +1,19 @@
+{
+  "name": "glide-mq-demo",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "tsx src/server.ts",
+    "dev": "tsx watch src/server.ts"
+  },
+  "dependencies": {
+    "glide-mq": "^0.1.0",
+    "express": "^4"
+  },
+  "devDependencies": {
+    "typescript": "^5",
+    "@types/express": "^4",
+    "@types/node": "^22",
+    "tsx": "^4"
+  }
+}
